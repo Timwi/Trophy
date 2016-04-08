@@ -50,14 +50,26 @@ namespace Trophy
             if (args.Length == 2 && args[0] == "--post-build-check")
                 return Ut.RunPostBuildChecks(args[1], Assembly.GetExecutingAssembly());
 
-            SettingsUtil.LoadSettings(out Settings);
-
             try
             {
                 Console.OutputEncoding = Encoding.UTF8;
                 Console.TreatControlCAsInput = true;
             }
             catch { }
+
+            SettingsUtil.LoadSettings(out Settings);
+
+            foreach (var pp in Settings.InstalledPlugins)
+            {
+                try
+                {
+                    Assembly.LoadFile(pp);
+                }
+                catch (Exception e)
+                {
+                    ConsoleUtil.WriteLine("The plugin {0/Cyan} could not be loaded: {1/Magenta} ({2}).".Color(null).Fmt(pp, e.Message, e.GetType().FullName));
+                }
+            }
 
             QuizCmdLine cmd;
             try
