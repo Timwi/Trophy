@@ -127,9 +127,9 @@ namespace Trophy
                 return "{0/White} × {1/DarkCyan}".Color(null).Fmt(((dynamic) obj).Length, t.GetElementType().Name);
 
             Type[] arguments;
-            if (t.TryGetInterfaceGenericParameters(typeof(IDictionary<,>), out arguments))
+            if (t.TryGetGenericParameters(typeof(IDictionary<,>), out arguments))
                 return "{0/White} × {1/DarkMagenta} → {2/DarkCyan}".Color(null).Fmt(((dynamic) obj).Count, arguments[0].Name, arguments[1].Name);
-            if (t.TryGetInterfaceGenericParameters(typeof(ICollection<>), out arguments))
+            if (t.TryGetGenericParameters(typeof(ICollection<>), out arguments))
                 return "{0/White} × {1/DarkCyan}".Color(null).Fmt(((dynamic) obj).Count, arguments[0].Name);
 
             return obj.ToConsoleColoredString(ConsoleColor.Magenta);
