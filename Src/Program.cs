@@ -91,6 +91,9 @@ namespace Trophy
             Quiz = ClassifyJson.DeserializeFile<QuizBase>(dataFile);
 
             Server = new HttpServer(port);
+#if DEBUG
+            Server.PropagateExceptions = true;
+#endif
             var resolver = new UrlResolver(
                 new UrlMapping(path: "/", specificPath: true, handler: handle),
                 new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, "jquery-2.1.4.js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
