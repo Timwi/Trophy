@@ -6,7 +6,7 @@ using RT.Util.ExtensionMethods;
 
 namespace Trophy
 {
-    [CommandName("uninstall"), DocumentationRhoML("Lists all the installed Trophy plugins.")]
+    [CommandName("uninstall"), DocumentationRhoML("Uninstalls an existing Trophy plugin.")]
     public sealed class QuizCmdUninstall : QuizCmdLine, ICommandLineValidatable
     {
         [IsPositional, IsMandatory, DocumentationRhoML("Specifies the path and filename of the plugin to uninstall.")]

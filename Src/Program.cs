@@ -118,7 +118,7 @@ namespace Trophy
                     Console.Clear();
                     ConsoleUtil.WriteLine(Quiz.UndoLine == null ? null : "← Undo: {0/Gray}".Color(ConsoleColor.Magenta).Fmt(Quiz.UndoLine));
                     ConsoleUtil.WriteLine(Quiz.RedoLine == null ? null : "→ Redo: {0/Gray}".Color(ConsoleColor.Green).Fmt(Quiz.RedoLine));
-                    ConsoleUtil.WriteLine("{0/DarkYellow} · {1/DarkGreen} · {2/DarkMagenta}".Color(ConsoleColor.DarkGray).Fmt(Quiz.CurrentState.GetType().Name, Quiz.CurrentState.JsMethod ?? "(no method)", Quiz.CurrentState.JsMusic ?? "(no music)"), align: HorizontalTextAlignment.Right);
+                    ConsoleUtil.WriteLine("{0/DarkCyan} · {1/DarkYellow} · {2/DarkGreen} · {3/DarkMagenta}".Color(ConsoleColor.DarkGray).Fmt($"port {port}", Quiz.CurrentState.GetType().Name, Quiz.CurrentState.JsMethod ?? "(no method)", Quiz.CurrentState.JsMusic ?? "(no music)"), align: HorizontalTextAlignment.Right);
                     ConsoleUtil.WriteLine(Quiz.CurrentState.Describe);
                     Console.WriteLine();
 
