@@ -99,7 +99,8 @@ namespace Trophy
                 new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, "jquery-2.1.4.js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
                 new UrlMapping(path: "/js1", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, Quiz.CssJsFilename, Quiz.CssJsFilename + ".js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
                 new UrlMapping(path: "/js2", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, "Global.js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
-                new UrlMapping(path: "/css", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, Quiz.CssJsFilename, Quiz.CssJsFilename + ".css"), "text/css; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
+                new UrlMapping(path: "/css1", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, Quiz.CssJsFilename, Quiz.CssJsFilename + ".css"), "text/css; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
+                new UrlMapping(path: "/css2", specificPath: true, handler: req => Quiz.MoreCss == null ? HttpResponse.Css("") : HttpResponse.File(Path.Combine(resourcePath, Quiz.CssJsFilename, Quiz.MoreCss), "text/css; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
                 new UrlMapping(path: "/files", handler: new FileSystemHandler(resourcePath).Handle),
                 new UrlMapping(path: "/socket", specificPath: true, handler: webSocket));
             if (resourcePath != null)
@@ -238,10 +239,14 @@ namespace Trophy
                         new TITLE("Quiz"),
                         new META { httpEquiv = "Content-type", content = "text/html; charset=utf-8" },
                         new SCRIPT { src = "/jquery" },
-                        new LINK { rel = "stylesheet", href = "/css" },
+                        new LINK { rel = "stylesheet", href = "/css1" },
+                        new LINK { rel = "stylesheet", href = "/css2" },
                         new SCRIPT { src = "/js1" },
                         new SCRIPT { src = "/js2" }),
-                    new BODY().Data("socket-url", Regex.Replace(req.Url.WithParent("socket").ToFull(), @"^http", "ws"))._(new DIV { id = "content" })));
+                    new BODY()
+                        .Data("socket-url", Regex.Replace(req.Url.WithParent("socket").ToFull(), @"^http", "ws"))
+                        .Data("data", Quiz.ExtraData.NullOr(ed => ClassifyJson.Serialize(ed).Apply(val => { val.Remove(":fulltype"); return val; })))
+                        ._(new DIV { id = "content" })));
         }
 
         private static HttpResponse webSocket(HttpRequest req)

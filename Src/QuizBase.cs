@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RT.Util.Json;
 using RT.Util.Serialization;
 
 namespace Trophy
@@ -52,5 +53,9 @@ namespace Trophy
         public string RedoLine { get { return _redo.Count == 0 ? null : _redo.Peek().Item2; } }
 
         public abstract string CssJsFilename { get; }
+        public virtual string MoreCss { get { return null; } }
+
+        /// <summary>This data is added to a <c>data-data</c> attribute on the <c>body</c> tag in the HTML.</summary>
+        public virtual object ExtraData { get { return null; } }
     }
 }
