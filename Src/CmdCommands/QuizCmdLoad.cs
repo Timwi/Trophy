@@ -1,4 +1,4 @@
-﻿using RT.Util.CommandLine;
+﻿using RT.CommandLine;
 
 namespace Trophy
 {

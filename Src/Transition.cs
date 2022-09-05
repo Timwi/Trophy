@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using RT.Util.Consoles;
-using RT.Util.Dialogs;
 using RT.Util.ExtensionMethods;
+using RT.Util.Forms;
 using RT.Util.Text;
 
 namespace Trophy

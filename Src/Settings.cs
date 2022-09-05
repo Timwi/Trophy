@@ -1,5 +1,5 @@
-﻿using RT.Util;
-using RT.Util.Serialization;
+﻿using RT.Serialization;
+using RT.Util;
 
 namespace Trophy
 {

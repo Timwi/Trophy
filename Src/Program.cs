@@ -7,15 +7,16 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using RT.CommandLine;
+using RT.Json;
+using RT.PostBuild;
+using RT.Serialization;
 using RT.Servers;
 using RT.TagSoup;
 using RT.Util;
-using RT.Util.CommandLine;
 using RT.Util.Consoles;
-using RT.Util.Dialogs;
 using RT.Util.ExtensionMethods;
-using RT.Util.Json;
-using RT.Util.Serialization;
+using RT.Util.Forms;
 using RT.Util.Text;
 
 namespace Trophy
@@ -48,7 +49,7 @@ namespace Trophy
         static int Main(string[] args)
         {
             if (args.Length == 2 && args[0] == "--post-build-check")
-                return Ut.RunPostBuildChecks(args[1], Assembly.GetExecutingAssembly());
+                return PostBuildChecker.RunPostBuildChecks(args[1], Assembly.GetExecutingAssembly());
 
             try
             {

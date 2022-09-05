@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using RT.Util.CommandLine;
+using RT.CommandLine;
 using RT.Util.Consoles;
 using RT.Util.ExtensionMethods;
 
@@ -16,7 +16,7 @@ namespace Trophy
 
         public ConsoleColoredString Validate()
         {
-            if (Program.Settings.InstalledPlugins.Any(p => p.EqualsNoCase(PluginPath)))
+            if (Program.Settings.InstalledPlugins.Any(p => p.EqualsIgnoreCase(PluginPath)))
                 return "The plugin, {0/Cyan}, is already installed.".Color(null).Fmt(PluginPath);
 
             if (!File.Exists(PluginPath))

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using RT.Util.Json;
-using RT.Util.Serialization;
+using RT.Serialization;
 
 namespace Trophy
 {

@@ -1,8 +1,8 @@
 ﻿using System;
-using RT.Util.CommandLine;
+using RT.CommandLine;
+using RT.Serialization;
 using RT.Util.Consoles;
 using RT.Util.ExtensionMethods;
-using RT.Util.Serialization;
 
 namespace Trophy
 {
