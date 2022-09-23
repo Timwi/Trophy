@@ -407,7 +407,7 @@ namespace Trophy
                 else
                     rawEditables = getEditables(type.GetAllFields());
 
-                var editables = filter.Length == 0 ? rawEditables : rawEditables.Where(inf => filter.Split(' ').All(w => ((object) inf.GetValue()).ToUsefulString().ToString().ContainsNoCase(w))).ToArray();
+                var editables = filter.Length == 0 ? rawEditables : rawEditables.Where(inf => filter.Split(' ').All(w => ((object) inf.GetValue()).ToUsefulString().ToString().ContainsIgnoreCase(w))).ToArray();
 
                 if (editables.Length == 0)
                     selStart = 0;

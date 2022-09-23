@@ -11,8 +11,8 @@ namespace Trophy
         public abstract ConsoleColoredString Describe { get; }
         public abstract string JsMethod { get; }
         public abstract object JsParameters { get; }
-        public virtual string JsMusic { get { return null; } }
-        public virtual string JsJingle { get { return null; } }
+        public virtual string JsMusic => null;
+        public virtual string JsJingle => null;
 
         public QuizStateBase() { }
 

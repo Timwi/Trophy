@@ -15,7 +15,7 @@ namespace Trophy
 
         public ConsoleColoredString Validate()
         {
-            PluginIndex = Program.Settings.InstalledPlugins.IndexOf(p => p.EqualsNoCase(PluginPath));
+            PluginIndex = Program.Settings.InstalledPlugins.IndexOf(p => p.EqualsIgnoreCase(PluginPath));
             if (PluginIndex == -1)
                 return "The plugin, {0/Cyan}, is not installed.".Color(null).Fmt(PluginPath);
             return null;
