@@ -16,9 +16,6 @@ namespace Trophy
             return list;
         }
 
-        Stack<T> IClassifySubstitute<Stack<T>, List<T>>.FromSubstitute(List<T> instance)
-        {
-            return instance == null ? null : instance.ToStack();
-        }
+        Stack<T> IClassifySubstitute<Stack<T>, List<T>>.FromSubstitute(List<T> instance) => instance?.ToStack();
     }
 }

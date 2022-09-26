@@ -13,7 +13,7 @@ namespace Trophy
     {
         public ConsoleKey Key { get; private set; }
         public string Name { get; private set; }
-        private Func<TransitionResult> _executor;
+        private readonly Func<TransitionResult> _executor;
 
         private Transition(ConsoleKey key, string name, Func<TransitionResult> executor)
         {
@@ -22,12 +22,8 @@ namespace Trophy
             _executor = executor;
         }
 
-        private static TransitionResult resultFromState(QuizStateBase state, string name)
-        {
-            if (state == null)
-                return null;
-            return new TransitionResult(state, name, state.JsMethod, state.JsParameters, state.JsMusic, state.JsJingle);
-        }
+        private static TransitionResult resultFromState(QuizStateBase state, string name) =>
+            state == null ? null : new TransitionResult(state, name, state.JsMethod, state.JsParameters, state.JsMusic, state.JsJingle);
 
         public static Transition Simple(ConsoleKey key, string name, Func<TransitionResult> executor)
         {

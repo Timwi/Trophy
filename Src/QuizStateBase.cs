@@ -16,10 +16,7 @@ namespace Trophy
 
         public QuizStateBase() { }
 
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
+        public object Clone() => MemberwiseClone();
 
         public static ConsoleKeyInfo ReadKey()
         {

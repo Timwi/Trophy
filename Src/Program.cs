@@ -289,9 +289,9 @@ namespace Trophy
                     obj = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(genericArguments), new object[] { obj });
                     setValue(obj);
                 }
-                else if (obj is ICloneable)
+                else if (obj is ICloneable clonable)
                 {
-                    obj = ((ICloneable) obj).Clone();
+                    obj = clonable.Clone();
                     setValue(obj);
                 }
             });
@@ -333,7 +333,7 @@ namespace Trophy
             var cursorVisible = Console.CursorVisible;
             Console.CursorVisible = false;
 
-            path = path ?? new[] { "Data" };
+            path ??= new[] { "Data" };
 
             var selStart = 0;
             var selLength = 1;
@@ -387,7 +387,7 @@ namespace Trophy
                         DeclaredType = valueType,
                         GetValue = new Func<dynamic>(() => kvp.Value),
                         SetValue = new Action<dynamic>(val => { ensureCopy(); obj[kvp.Key] = val; }),
-                        Key = kvp.Key
+                        kvp.Key
                     }).ToArray();
                 }
                 else if (genericType == typeof(List<>) || type.IsArray)
@@ -573,7 +573,7 @@ namespace Trophy
 
                     case "DownArrow":
                         if (selStart + selLength < editables.Length)
-                            selStart = selStart + selLength;
+                            selStart += selLength;
                         else
                             selStart = editables.Length - 1;
                         selLength = 1;
@@ -653,8 +653,8 @@ namespace Trophy
                         if (selLength != 1)
                             break;
                         var value = editables[selStart].GetValue();
-                        if (value is bool)
-                            editables[selStart].SetValue(!((bool) value));
+                        if (value is bool bVal)
+                            editables[selStart].SetValue(!bVal);
                         else
                             Edit(value, path.Concat(editables[selStart].Label).ToArray(), editables[selStart].DeclaredType, editables[selStart].SetValue);
                         break;
@@ -807,20 +807,15 @@ namespace Trophy
                 ConsoleUtil.WriteLine("{0/White}: {1}".Color(null).Fmt(kvp.Key, kvp.Value.Item1));
             }
 
-            Tuple<ConsoleColoredString, object> ret;
-            return selections.TryGetValue(ReadKey().Key, out ret) ? ret.Item2 : null;
+            return selections.TryGetValue(ReadKey().Key, out var ret) ? ret.Item2 : null;
         }
 
         public static object GetConsoleSelectionFull(Dictionary<ConsoleKey, Tuple<ConsoleColoredString, object>> selections)
         {
             object cur = selections;
-            while (true)
-            {
-                var curDic = cur as Dictionary<ConsoleKey, Tuple<ConsoleColoredString, object>>;
-                if (curDic == null)
-                    return cur;
+            while (cur is Dictionary<ConsoleKey, Tuple<ConsoleColoredString, object>> curDic)
                 cur = GetConsoleSelection(curDic);
-            }
+            return cur;
         }
 
         public static T ConsoleSelectClass<T>(this IEnumerable<T> objs, Func<T, ConsoleColoredString> describe) where T : class

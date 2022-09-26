@@ -113,10 +113,10 @@ namespace Trophy
         {
             if (obj == null)
                 return "<null>".Color(ConsoleColor.DarkGray);
-            if (obj is IToConsoleColoredString)
-                return ((IToConsoleColoredString) obj).ToConsoleColoredString();
-            if (obj is string)
-                return ((string) obj).Color(ConsoleColor.Yellow);
+            if (obj is IToConsoleColoredString ccs)
+                return ccs.ToConsoleColoredString();
+            if (obj is string str)
+                return str.Color(ConsoleColor.Yellow);
             if (ExactConvert.IsTrueIntegerType(obj.GetType()))
                 return obj.ToString().Color(ConsoleColor.Red);
             if (obj is bool)
@@ -126,8 +126,7 @@ namespace Trophy
             if (t.IsArray)
                 return "{0/White} × {1/DarkCyan}".Color(null).Fmt(((dynamic) obj).Length, t.GetElementType().Name);
 
-            Type[] arguments;
-            if (t.TryGetGenericParameters(typeof(IDictionary<,>), out arguments))
+            if (t.TryGetGenericParameters(typeof(IDictionary<,>), out var arguments))
                 return "{0/White} × {1/DarkMagenta} → {2/DarkCyan}".Color(null).Fmt(((dynamic) obj).Count, arguments[0].Name, arguments[1].Name);
             if (t.TryGetGenericParameters(typeof(ICollection<>), out arguments))
                 return "{0/White} × {1/DarkCyan}".Color(null).Fmt(((dynamic) obj).Count, arguments[0].Name);

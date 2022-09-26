@@ -15,9 +15,9 @@ namespace Trophy
         public string UndoLine { get; private set; }
 
         [ClassifyNotNull, ClassifySubstitute(typeof(StackToListSubstitution<Tuple<QuizStateBase, string>>))]
-        protected Stack<Tuple<QuizStateBase, string>> _undo = new Stack<Tuple<QuizStateBase, string>>();
+        protected Stack<Tuple<QuizStateBase, string>> _undo = new();
         [ClassifyNotNull, ClassifySubstitute(typeof(StackToListSubstitution<Tuple<QuizStateBase, string>>))]
-        protected Stack<Tuple<QuizStateBase, string>> _redo = new Stack<Tuple<QuizStateBase, string>>();
+        protected Stack<Tuple<QuizStateBase, string>> _redo = new();
 
         public void Transition(QuizStateBase newState, string undoLine)
         {
@@ -49,12 +49,12 @@ namespace Trophy
             return true;
         }
 
-        public string RedoLine { get { return _redo.Count == 0 ? null : _redo.Peek().Item2; } }
+        public string RedoLine => _redo.Count == 0 ? null : _redo.Peek().Item2;
 
         public abstract string CssJsFilename { get; }
-        public virtual string MoreCss { get { return null; } }
+        public virtual string MoreCss => null;
 
         /// <summary>This data is added to a <c>data-data</c> attribute on the <c>body</c> tag in the HTML.</summary>
-        public virtual object ExtraData { get { return null; } }
+        public virtual object ExtraData => null;
     }
 }
