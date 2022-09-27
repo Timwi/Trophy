@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using RT.CommandLine;
 using RT.Json;
@@ -25,7 +26,8 @@ namespace Trophy
     {
         public static QuizBase Quiz;
         public static HttpServer Server;
-        public static HashSet<QuizWebSocket> Sockets = new HashSet<QuizWebSocket>();
+        public static HashSet<QuizWebSocket> Sockets = new();
+        public static Queue<string> PlayerInteractions = new();
         public static Settings Settings;
 
         public static string _logFile;
@@ -113,9 +115,10 @@ namespace Trophy
             Server.StartListening();
 
             var needSave = false;
+            var needRedraw = true;
             while (true)
             {
-                if (!Console.KeyAvailable)
+                if (needRedraw && !Console.KeyAvailable)
                 {
                     Console.Clear();
                     ConsoleUtil.WriteLine(Quiz.UndoLine == null ? null : "← Undo: {0/Gray}".Color(ConsoleColor.Magenta).Fmt(Quiz.UndoLine));
@@ -140,68 +143,90 @@ namespace Trophy
                         ClassifyJson.SerializeToFile(Quiz, dataFile);
                         needSave = false;
                     }
+                    needRedraw = false;
                 }
 
-                var keyInfo = Console.ReadKey(true);
                 TransitionResult transitionResult = null;
                 string transitionUndoLine = null;
 
-                switch (keyInfo.Key)
+                lock (PlayerInteractions)
                 {
-                    case ConsoleKey.Escape:
-                        if (keyInfo.Modifiers != 0)
-                            goto default;
-                        goto exit;
-
-                    case ConsoleKey.Backspace:
-                        if (
-                            (keyInfo.Modifiers == ConsoleModifiers.Shift) ? Quiz.Redo() :
-                            (keyInfo.Modifiers == 0) ? Quiz.Undo() :
-                            false)
-                            needSave = true;
-                        break;
-
-                    case ConsoleKey.F5:
-                        if (keyInfo.Modifiers != 0)
-                            goto default;
-                        Quiz = ClassifyJson.DeserializeFile<QuizBase>(dataFile);
-                        needSave = true;
-                        transitionResult = new TransitionResult(Quiz.CurrentState, null, Quiz.CurrentState.JsMethod, Quiz.CurrentState.JsParameters, Quiz.CurrentState.JsMusic, Quiz.CurrentState.JsJingle);
-                        break;
-
-                    case ConsoleKey.F9:
-                        if (keyInfo.Modifiers != 0)
-                            goto default;
-                        lock (Sockets)
-                            foreach (var socket in Sockets)
-                                socket.SendLoggedMessage(new JsonDict { { "panic", true } });
-                        break;
-
-                    case ConsoleKey.F2:
-                        if (keyInfo.Modifiers != 0)
-                            goto default;
-                        var newState = Quiz.CurrentState;
-                        Edit(newState, new[] { "Quiz" }, setValue: val => { newState = (QuizStateBase) val; });
-                        needSave = true;
-                        if (newState != Quiz.CurrentState)
+                    while (PlayerInteractions.Count > 0)
+                    {
+                        var msg = PlayerInteractions.Dequeue();
+                        transitionResult = Quiz.CurrentState.PlayerTransition(msg);
+                        if (transitionResult != null)
                         {
-                            transitionResult = new TransitionResult(newState);
-                            transitionUndoLine = "Edit quiz state manually";
+                            transitionUndoLine = "Player-initiated action";
+                            goto processTransition;
                         }
-                        break;
-
-                    default:
-                        var transition = Quiz.CurrentState.Transitions.FirstOrDefault(q => q.Key == keyInfo.Key);
-                        if (transition != null)
-                        {
-                            Console.WriteLine();    // In case transition.Execute() outputs something and then waits for a key
-                            transitionResult = transition.Execute();
-                            transitionUndoLine = transition.Name;
-                            needSave = true;
-                        }
-                        break;
+                    }
                 }
 
+                if (Console.KeyAvailable)
+                {
+                    var keyInfo = Console.ReadKey(true);
+                    switch (keyInfo.Key)
+                    {
+                        case ConsoleKey.Escape:
+                            if (keyInfo.Modifiers != 0)
+                                goto default;
+                            goto exit;
+
+                        case ConsoleKey.Backspace:
+                            if (
+                                (keyInfo.Modifiers == ConsoleModifiers.Shift) ? Quiz.Redo() :
+                                (keyInfo.Modifiers == 0) ? Quiz.Undo() :
+                                false)
+                            {
+                                needSave = true;
+                                needRedraw = true;
+                            }
+                            break;
+
+                        case ConsoleKey.F5:
+                            if (keyInfo.Modifiers != 0)
+                                goto default;
+                            Quiz = ClassifyJson.DeserializeFile<QuizBase>(dataFile);
+                            transitionResult = new TransitionResult(Quiz.CurrentState, null, Quiz.CurrentState.JsMethod, Quiz.CurrentState.JsParameters, Quiz.CurrentState.JsMusic, Quiz.CurrentState.JsJingle);
+                            break;
+
+                        case ConsoleKey.F9:
+                            if (keyInfo.Modifiers != 0)
+                                goto default;
+                            lock (Sockets)
+                                foreach (var socket in Sockets)
+                                    socket.SendLoggedMessage(new JsonDict { { "panic", true } });
+                            break;
+
+                        case ConsoleKey.F2:
+                            if (keyInfo.Modifiers != 0)
+                                goto default;
+                            var newState = Quiz.CurrentState;
+                            Edit(newState, new[] { "Quiz" }, setValue: val => { newState = (QuizStateBase) val; });
+                            needRedraw = true;
+                            if (newState != Quiz.CurrentState)
+                            {
+                                transitionResult = new TransitionResult(newState);
+                                transitionUndoLine = "Edit quiz state manually";
+                            }
+                            break;
+
+                        default:
+                            var transition = Quiz.CurrentState.Transitions.FirstOrDefault(q => q.Key == keyInfo.Key);
+                            if (transition != null)
+                            {
+                                Console.WriteLine();    // In case transition.Execute() outputs something and then waits for a key
+                                transitionResult = transition.Execute();
+                                transitionUndoLine = transition.Name;
+                            }
+                            break;
+                    }
+                }
+                else
+                    Thread.Sleep(100);
+
+                processTransition:
                 if (transitionResult != null)
                 {
                     if (transitionResult.State != null && transitionUndoLine != null)
@@ -223,6 +248,7 @@ namespace Trophy
                     }
 
                     needSave = true;
+                    needRedraw = true;
                 }
             }
 
@@ -252,7 +278,7 @@ namespace Trophy
 
         private static HttpResponse webSocket(HttpRequest req)
         {
-            return HttpResponse.WebSocket(new QuizWebSocket(req.SourceIP));
+            return HttpResponse.WebSocket(new QuizWebSocket(req.SourceIP, PlayerInteractions));
         }
 
         public static void Edit(dynamic obj, string[] path, Type type = null, Action<object> setValue = null, string promptForPrimitiveValue = null)

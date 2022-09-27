@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using RT.Json;
 using RT.Serialization;
 using RT.Servers;
@@ -9,11 +10,13 @@ namespace Trophy
 {
     sealed class QuizWebSocket : WebSocket
     {
-        private IPEndPoint _endpoint;
+        private readonly IPEndPoint _endpoint;
+        private readonly Queue<string> _playerInteractions;
 
-        public QuizWebSocket(IPEndPoint endpoint)
+        public QuizWebSocket(IPEndPoint endpoint, Queue<string> playerInteractions)
         {
             _endpoint = endpoint;
+            _playerInteractions = playerInteractions;
         }
 
         protected override void onBeginConnection()
@@ -50,6 +53,9 @@ namespace Trophy
                     SendLoggedMessage(new JsonDict { { "method", state.JsMethod }, { "params", prms }, { "music", state.JsMusic }, { "jingle", state.JsJingle } });
                 }
             }
+            else
+                lock (_playerInteractions)
+                    _playerInteractions.Enqueue(msg);
             base.onTextMessageReceived(msg);
         }
 

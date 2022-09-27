@@ -8,6 +8,7 @@ namespace Trophy
     public abstract class QuizStateBase : ICloneable
     {
         public abstract IEnumerable<Transition> Transitions { get; }
+        public virtual TransitionResult PlayerTransition(string data) => null;
         public abstract ConsoleColoredString Describe { get; }
         public abstract string JsMethod { get; }
         public abstract object JsParameters { get; }

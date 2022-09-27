@@ -97,6 +97,21 @@ $(function()
             $(document.body).css('cursor', 'none');
         }
     });
+
+	document.addEventListener('click', function (e)
+	{
+		var target = e.target;
+		while (target !== null)
+		{
+			if (target.classList.contains('clickable'))
+			{
+				console.log(`Sending player interaction: ${target.dataset.p}`);
+				socket.send(target.dataset.p);
+				return;
+			}
+			target = target.parentNode;
+		}
+	});
 });
 
 function findBestValue(startingValue, evaluator, threshold, preferHigh)
