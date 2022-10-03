@@ -157,7 +157,7 @@ namespace Trophy
                         transitionResult = Quiz.CurrentState.PlayerTransition(msg);
                         if (transitionResult != null)
                         {
-                            transitionUndoLine = "Player-initiated action";
+                            transitionUndoLine = transitionResult.UndoLine ?? "Player-initiated action";
                             goto processTransition;
                         }
                     }
@@ -205,6 +205,7 @@ namespace Trophy
                             var newState = Quiz.CurrentState;
                             Edit(newState, new[] { "Quiz" }, setValue: val => { newState = (QuizStateBase) val; });
                             needRedraw = true;
+                            needSave = true;
                             if (newState != Quiz.CurrentState)
                             {
                                 transitionResult = new TransitionResult(newState);
