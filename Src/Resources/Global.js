@@ -1,31 +1,30 @@
-﻿$.fn.addClassDelay = function (cls, delay)
+﻿$.fn.addClassDelay = function(cls, delay)
 {
     var t = this;
-    window.setTimeout(function () { t.addClass(cls); }, delay || 100);
+    window.setTimeout(function() { t.addClass(cls); }, delay || 100);
     return t;
 };
 
-$(function ()
+$(function()
 {
     var socket;
-    var currentMusic = null;
     var jingleVolume = 1;
-    var jingles = {};
 
     function newSocket()
     {
+        console.log('newSocket called');
         socket = new WebSocket($(document.body).data('socket-url'));
-        socket.onopen = function ()
+        socket.onopen = function()
         {
             console.log('socket open');
             socket.send("ping");
         };
-        socket.onclose = function ()
+        socket.onclose = function()
         {
             console.log('socket close');
             window.setTimeout(newSocket, 1000);
         };
-        socket.onmessage = function (msg)
+        socket.onmessage = function(msg)
         {
             console.log('socket message: ' + msg.data);
             var data = JSON.parse(msg.data);
@@ -51,7 +50,7 @@ $(function ()
                     var newJingle = $('<audio src="' + jingleUrl(data.jingle) + '">').appendTo(document.body);
                     newJingle[0].volume = jingleVolume;
                     newJingle[0].play();
-                    newJingle[0].onended = function () { newJingle.remove(); };
+                    newJingle[0].onended = function() { newJingle.remove(); };
                 }
                 if ('music' in data)
                 {
@@ -66,7 +65,7 @@ $(function ()
                         if (key !== data.music)
                         {
                             // fade out
-                            $(musics[key].audio).animate({ volume: 0 }, musics[key].fadeOut * 1000, function (k) { return function () { musics[k].audio.pause(); }; }(key));
+                            $(musics[key].audio).animate({ volume: 0 }, musics[key].fadeOut * 1000, function(k) { return function() { musics[k].audio.pause(); }; }(key));
                         }
                         else
                         {
@@ -87,7 +86,7 @@ $(function ()
 
     newSocket();
 
-    $(document.body).keypress(function (e)
+    $(document.body).keypress(function(e)
     {
         if (e.keyCode === 99)   // 'c'
         {

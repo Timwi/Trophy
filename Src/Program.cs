@@ -97,7 +97,7 @@ namespace Trophy
 #endif
             var resolver = new UrlResolver(
                 new UrlMapping(path: "/", specificPath: true, handler: handle),
-                new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, "jquery-2.1.4.js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
+                new UrlMapping(path: "/jquery", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, "jquery.min.js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
                 new UrlMapping(path: "/js1", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, Quiz.CssJsFilename, Quiz.CssJsFilename + ".js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
                 new UrlMapping(path: "/js2", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, "Global.js"), "text/javascript; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
                 new UrlMapping(path: "/css1", specificPath: true, handler: req => HttpResponse.File(Path.Combine(resourcePath, Quiz.CssJsFilename, Quiz.CssJsFilename + ".css"), "text/css; charset=utf-8", ifModifiedSince: req.Headers.IfModifiedSince)),
@@ -346,7 +346,7 @@ namespace Trophy
 
                 if (rFieldName.StartsWith("<") && rFieldName.EndsWith(">k__BackingField"))
                 {
-                    // Compiler-generated fields for auto-implemented properties 
+                    // Compiler-generated fields for auto-implemented properties
                     rFieldName = rFieldName.Substring(1, rFieldName.Length - "<>k__BackingField".Length);
                     var prop = type.GetAllProperties().FirstOrDefault(p => p.Name == rFieldName);
                     if (prop != null)

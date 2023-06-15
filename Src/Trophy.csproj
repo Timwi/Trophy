@@ -107,12 +107,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Global.js" />
-    <Content Include="Resources\jquery-2.1.4.js" />
+    <Content Include="Resources\jquery.min.js" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y "$(ProjectDir)Resources\Global.js" "D:\temp\Quiz"
+xcopy /y "$(ProjectDir)Resources\jquery.min.js" "D:\temp\Quiz"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
