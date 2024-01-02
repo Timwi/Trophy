@@ -58,7 +58,7 @@ namespace Trophy
             }
             catch { }
 
-            SettingsUtil.LoadSettings(out Settings);
+            Settings = ClassifyJson.DeserializeFile<Settings>(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "TrophySettings.json"));
 
             foreach (var pp in Settings.InstalledPlugins)
             {

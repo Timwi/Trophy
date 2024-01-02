@@ -2,7 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 using RT.CommandLine;
+using RT.Serialization;
 using RT.Util.Consoles;
 using RT.Util.ExtensionMethods;
 
@@ -37,7 +39,7 @@ namespace Trophy
         public override int Execute()
         {
             Program.Settings.InstalledPlugins = Program.Settings.InstalledPlugins.Concat(PluginPath).ToArray();
-            Program.Settings.SaveLoud();
+            ClassifyJson.SerializeToFile(Program.Settings, Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "TrophySettings.json"));
             return 1;
         }
     }

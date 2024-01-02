@@ -8,7 +8,7 @@ namespace Trophy
     {
         private static void PostBuildCheck(IPostBuildReporter rep)
         {
-            CommandLineParser.PostBuildStep<QuizCmdLine>(rep, null);
+            CommandLineParser.PostBuildStep<QuizCmdLine>(rep);
         }
 
         public abstract int Execute();
