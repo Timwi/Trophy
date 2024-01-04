@@ -207,16 +207,22 @@ namespace Trophy
                     if (transitionResult.State != null && transitionUndoLine != null)
                         Quiz.Transition(transitionResult.State, transitionUndoLine);
 
-                    if (transitionResult.JsMethod != null || transitionResult.JsMusic != null)
+                    if (transitionResult.JsMethod != null || transitionResult.JsMusic != null || transitionResult.JsJingle != null)
                     {
-                        var prms = transitionResult.JsParameters.NullOr(p =>
+                        var prms = (transitionResult.JsParameters ?? transitionResult.State?.JsParameters).NullOr(p =>
                         {
                             var ret = ClassifyJson.Serialize(p);
                             if (ret.ContainsKey(":fulltype"))
                                 ret.Remove(":fulltype");
                             return ret;
                         });
-                        var dict = new JsonDict { { "method", transitionResult.JsMethod }, { "params", prms }, { "music", transitionResult.JsMusic }, { "jingle", transitionResult.JsJingle } };
+                        var dict = new JsonDict
+                        {
+                            ["method"] = transitionResult.JsMethod ?? transitionResult.State?.JsMethod,
+                            ["params"] = prms,
+                            ["music"] = transitionResult.JsMusic ?? transitionResult.State?.JsMusic,
+                            ["jingle"] = transitionResult.JsJingle ?? transitionResult.State?.JsJingle
+                        };
                         lock (Sockets)
                             foreach (var socket in Sockets)
                                 socket.SendLoggedMessage(dict);
