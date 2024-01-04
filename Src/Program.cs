@@ -423,7 +423,7 @@ namespace Trophy
                 if (!Console.KeyAvailable)
                 {
                     Console.Clear();
-                    ConsoleUtil.WriteLine(path.Select(p => p.Color(ConsoleColor.White)).JoinColoredString(" ▶ ".Color(ConsoleColor.Green)).ColorBackground(ConsoleColor.DarkGreen));
+                    ConsoleUtil.WriteLine(path.Select(p => p.Color(ConsoleColor.White)).JoinColoredString(" ► ".Color(ConsoleColor.Green)).ColorBackground(ConsoleColor.DarkGreen));
                     ConsoleUtil.WriteLine(type.FullName.Color(ConsoleColor.DarkGreen));
                     if (genericType != typeof(Dictionary<,>) && genericType != typeof(List<>) && !(obj is ICloneable) && !(obj is Array))
                         ConsoleUtil.WriteLine("NOT CLONEABLE".Color(ConsoleColor.Yellow, ConsoleColor.Red));
@@ -440,7 +440,7 @@ namespace Trophy
                         var selected = i >= selStart && i < selStart + selLength;
 
                         if (i == (selIsTop ? selStart : selStart + selLength - 1))
-                            t.SetCell(0, i, "▶");
+                            t.SetCell(0, i, "►");
                         t.SetCell(1, i, editable.Label);
                         t.SetCell(2, i, valueStr);
                         if (selected)
